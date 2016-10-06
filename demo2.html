@@ -193,11 +193,11 @@
         };
         var images = new Object(); //array to store the queried images fro Mapillary
         var feature = features[0]; //defines feature as the parcel that has been clicked
-        var radius = 100;
-        //((feature.properties.road_dist) + 85); //defines search radius for query in meters + 15 meters for good measure
+        var radius = ((feature.properties.road_dist + 15) * 5); //defines search radius for query in meters + 15 meters for good measure
         var lng = feature.properties.longitude
         var lat = feature.properties.latitude;
         console.log(lng + ", " + lat)
+        console.log(feature.properties.road_dist);
         console.log("radius: ", radius);
       clear = function (){
           $("#").empty();
