@@ -1,0 +1,43 @@
+//For getting the camera angle, I'm considering something like the below code
+
+//based on query from here: https://a.mapillary.com/#get-searchimclose
+
+var images = new Object() //this will store the JSON from the query
+var img_start = //this will be the best image for camera angle and proximity, where the camera will start
+var radius = parcel.item.road_dist //this is currently stored in feet, but with reprojection should be meters and then fills the variable for the currently selected parcel
+var lat
+var long
+//lat and long are filled by the latitude and longitude property from the Mapillary JSON
+var calc_ca = function (lat1, long1, lat2, long2) {
+this function will calculate the bearing/angle in degrees from the Mapillary image (lat1/long1) to the parcel centroid (lat2/long2)
+}
+
+//at this point run the query in the link above, searching for a limit of ten images which are returned as a JSON, set this equal to var images
+
+//run the below for loop on the JSON
+
+for i in images {
+ca_1 = calc_ca(i.lat, i.long, parcel.item.latitude, parcel.item.longitude); //where parcel.item is the selected parcel, and this tells the angle from image to parcels
+ca_2 = i.ca; //this is the camera angle that is already recorded by Mapillary for the image
+i.ca_diff = Math.abs(ca_1 - ca_2); //this finds the absolute value in difference for the camera angle's view and the angle from that camera to the property
+};
+
+//now each object should have the .ca_diff property, so run a function to order them from smallest to largest, something like this but I think I didn't do this exactly right yet:
+
+function sortByKey(array, key) {
+return array.sort(function(a, b) {
+    var x = a[key]; var y = b[key];
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+});
+};
+
+var images_ca = sortByKey(images, 'ca_diff');     //this then runs the sort function 
+
+var img_start = images_ca[0]; //this stores the image key from the image with the camera angle that most closely matches the angle from image to property center
+
+//then you can initialize the viewer with your client_id, and the image your just found is img_start variable
+
+var mly = new Mapillary
+.Viewer('mly',
+                <client_id>
+                 img_start, {cover: true, cache: false, direction: false})

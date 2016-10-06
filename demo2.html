@@ -8,7 +8,8 @@
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.css' rel='stylesheet' />
     <script src="jquery-3.1.1.min.js"></script>
-    <script src="demo2script.js"></script>
+    <link href="normalize.css" rel="stylesheet" />
+    <link href="skeleton.css" rel="stylesheet" />
     <link href=
     "https://npmcdn.com/mapillary-js@1.4.1/dist/mapillary-js.min.css" rel=
     "stylesheet">
@@ -64,7 +65,7 @@
 
          #map {
              position: absolute;
-             width: 50%;
+             width: 710px;
              top: 0;
              right: 0;
              bottom: 0;
@@ -74,7 +75,10 @@
              max-width: 400px;
              font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
          }
-    </style>
+         .left {
+           background-color: #000;
+         }
+      </style>
 </head>
 <body>
     <div class="title">
@@ -84,15 +88,49 @@
         <br>
       Placeholder info
     </div><br>
-    <div class="mly-wrapper">
-        <div id='mly'></div>
-        <div id='map'></div>
+
+
+    <div class="mly-wrapper" class="container">
+      <div class="row">
+        <div class="six columns">
+          <div id='mly' class='container' id="left">
+            <div class="row">
+              <div id="id_0" class="four columns"></div>
+              <div id="id_1" class="four columns"></div>
+              <div id="id_2" class="four columns"></div>
+            </div>
+            <div class="row">
+              <div id="id_3" class="four columns"></div>
+              <div id="id_4" class="four columns"></div>
+              <div id="id_5" class="four columns"></div>
+            </div>
+            <div class="row">
+              <div id="id_6" class="four columns"></div>
+              <div id="id_7" class="four columns"></div>
+              <div id="id_8" class="four columns"></div>
+            </div>
+            <div class="row">
+              <div id="id_9" class="four columns"></div>
+              <div id="id_10" class="four columns"></div>
+              <div id="id_11" class="four columns"></div>
+            </div>
+            <div class="row">
+              <div id="id_12" class="four columns"></div>
+              <div id="id_13" class="four columns"></div>
+              <div id="id_14" class="four columns"></div>
+            </div>
+          </div>
+        </div>
+        <div class="six columns">
+          <div id='map'></div>
+        </div>
     </div>
+
     <script src=
     "https://npmcdn.com/mapillary-js@1.4.1/dist/mapillary-js.min.js">
     </script>
     <script>
-    window.img_start = 'UAGh45LqydVl6SiR2COlgA';
+    var img_start = '0000000000000';
     mapboxgl.accessToken = 'pk.eyJ1IjoiY2JlZGRvdyIsImEiOiI5Q09YRG1RIn0.Izu6OPJ4CEEaSSpGuys3Xg';
     var map = new mapboxgl.Map({
         container: 'map',
@@ -101,6 +139,26 @@
         zoom: 12
     });
 
+    function getJSON(url) {
+        var resp ;
+        var xmlHttp ;
+
+        resp  = '' ;
+        xmlHttp = new XMLHttpRequest();
+
+        if(xmlHttp != null)
+        {
+            xmlHttp.open( "GET", url, false );
+            xmlHttp.send( null );
+            resp = xmlHttp.responseText;
+        }
+
+        return resp ;
+    }
+
+
+
+    var mapillary_client_id = 'UTZhSnNFdGpxSEFFREUwb01GYzlXZzpkMWM2YzdjYjQxN2FhM2Vh' //clientID for chrisbeddow
     var nav = new mapboxgl.Navigation({position: 'top-left'}); // position is optional
     map.addControl(nav);
 
@@ -109,6 +167,7 @@
             'type': 'geojson',
             'data': 'https://gist.githubusercontent.com/cbeddow/0bb1a957326cab0aec649e0dea3b978d/raw/069f1695034d9aac75c412c12d572122e500109b/kelleys_island.geojson'
         });
+
         map.addControl(new mapboxgl.Navigation());
         // Add a layer showing the parcel polygons.
         map.addLayer({
@@ -123,35 +182,113 @@
         });
     });
 
-
     // When a click event occurs on a polygon, open a popup at the location of
     // the feature, with description HTML from its properties.
     map.on('click', function (e) {
       //change img_start variable, right now just a test to see if the new value will load
       //(and next is to modify this to load value from query of Mapillary API)
-
-
         var features = map.queryRenderedFeatures(e.point, { layers: ['parcels-layer'] });
         if (!features.length) {
             return;
         };
         var images = new Object(); //array to store the queried images fro Mapillary
         var feature = features[0]; //defines feature as the parcel that has been clicked
-        var radius = ((feature.properties.road_dist / 3.28084) + 15); //defines search radius for query in meters + 15 meters for good measure
-        var long = feature.properties.longitude
+        var radius = 100;
+        //((feature.properties.road_dist) + 85); //defines search radius for query in meters + 15 meters for good measure
+        var lng = feature.properties.longitude
         var lat = feature.properties.latitude;
+        console.log(lng + ", " + lat)
         console.log("radius: ", radius);
+      clear = function (){
+          $("#").empty();
+          console.log("Viewer cleared.");
+        };
+      // clear();
         map.flyTo({
-            center: [long, lat],
+            center: [lng, lat],
             zoom: 15,
         });
-        img_start = 'lGQKs30MWMrNJnTjDz-2Ig';
-        console.log(img_start);
+        //var url = "http://mapillary-magic.mapillary.io/v3/images?look_at[lon]=-82.6885&look_at[lat]=41.6021&look_at[radius]=88.1336331806"
+        var url2 ="http://mapillary-magic.mapillary.io/v3/images?look_at[lon]=" + lng + "&look_at[lat]=" + lat + "&look_at[radius]=" + radius
+        console.log(url2);
+        var added = false;
+        var that = this;
+
+        $.ajax({
+          dataType: "json",
+          url: url2,
+          success: function (data) {
+            if (that.added) {
+              console.log("Removing...")
+              map.removeLayer("points");
+              map.removeSource("points");
+            };
+            that.added = true;
+            var mygeojson = {
+              features: [],
+              type: "FeatureCollection",
+            };
+            var items = data.images.i;
+            for (var i = 0; i < data.images.length; i++) {
+              var y = data.images[i];
+              var id = i;
+              var yurl = "img src=https://d1cuyjsrcm0gby.cloudfront.net/"+i["key"]+ "/thumb-320.jpg";
+
+              mygeojson.features.push({
+                "geometry":{
+                    "type": "Point",
+                    "coordinates": [y.lon, y.lat]
+                },
+                "properties":{
+                    "url": yurl,
+                    "image": y.key,
+                    "id" : id
+                },
+                type: "Feature"
+              });
+            };
+
+          console.log(JSON.stringify(mygeojson));
+
+          map.addSource('points', { type: 'geojson', data: mygeojson });
+          var imglayer = {
+            "id": "points",
+            "type": "circle",
+            "source": "points",
+            "paint": {
+              "circle-color": "#32c987",
+              "circle-opacity": 0.3
+            }
+          };
+          map.addLayer(imglayer);
+          var images = data.images;
+          images.forEach( function(image, i){
+          // console.log(image["key"] +" " +i);
+             $("#id_"+i).html("<a target=_blank href=https://www.mapillary.com/map/im/"+image["key"] +">"+"<img src=https://d1cuyjsrcm0gby.cloudfront.net/"+image["key"]+"/thumb-320.jpg style=\"max-width:100%;max-height:100%\"></a>")
+           });
+              /* var x = document.createElement('div');
+		          x.className = 'marker';
+		          x.style.backgroundImage = 'url("https://d1cuyjsrcm0gby.cloudfront.net/"+i[key]+"/thumb-320.jpg")';
+              var xlon = i["lon"];
+              var xlat = i["lat"];
+              new mapboxgl.Marker(x)
+			           .setLngLat([xlon, xlat])
+			           .addTo(map);
+            });*/
+          }
+        });
+        //var lng1 = json1.images[0].lon;
+        //var lat1 = json1.images[0].lat;
+        //console.log(url2);
+
+      //  console.log(lng1, lat1);
+
+
 
         var popup = new mapboxgl.Popup()
             .setLngLat(map.unproject(e.point))
             //displays the TaxIDNum of the parcel
-            .setHTML(feature.properties.TaxIDNum)
+            .setHTML("TaxID: " + feature.properties.TaxIDNum + "<br>" + "Coords: " + feature.properties.longitude +","+ feature.properties.latitude)
 
             .addTo(map);
     });
@@ -163,9 +300,9 @@
     });
 
 
-             var mly = new Mapillary.Viewer('mly',
-                 'UTZhSnNFdGpxSEFFREUwb01GYzlXZzpkMWM2YzdjYjQxN2FhM2Vh',  // ClientID for user chrisbeddow
-                 img_start, {cover: true, cache: false, direction: false});
+      /*       var mly = new Mapillary.Viewer('mly',
+                 mapillary_client_id,  // ClientID for user chrisbeddow
+                 img_start, {cover: true, cache: false, direction: false}); */
 
 
 
